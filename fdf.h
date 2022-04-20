@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/20 20:59:51 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/20 22:39:38 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 typedef struct s_input_sys
 {
 	int	pressed;
+	int	latest_x;
+	int	latest_y;
+	int	pointed_x;
+	int	pointed_y;
 }	t_input_sys;
 
 typedef struct s_fdf
@@ -239,7 +243,8 @@ enum e_modifiers
 	NO_MLX_MOD_KEY,
 	MLX_MOD_MOUSE_LEFT,
 	MLX_MOD_MOUSE_RIGHT,
-	MLX_MOD_MOUSE_OTHER
+	MLX_MOD_MOUSE_OTHER,
+	MLX_NO_MOD
 };
 
 int		fdf(void);

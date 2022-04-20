@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/20 21:16:04 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/20 22:43:08 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,12 @@
 #include <math.h>
 
 #include <stdio.h>
+
+static void	_draw_line(t_fdf *app, int x1, int y1, int x2, int y2, int color)
+{
+	//TODO: ...
+	mlx_pixel_put(app->mlx_ptr, app->win_ptr, x1, y1, color);
+}
 
 static int	_key_down_hook(int keycode, void *param)
 {
@@ -33,10 +39,20 @@ static int	_key_down_hook(int keycode, void *param)
 	else
 	{
 		printf("Key Down %d With %04X\n", keycode, app->input.pressed);
+
+		//Test:
 		if (has_flag(*flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_C)
 		{
 			printf("Window Cleared\n");
 			mlx_clear_window(app->mlx_ptr, app->win_ptr);
+			app->input.pointed_x = 0;
+			app->input.pointed_y = 0;
+		}
+		if (has_flag(*flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_V)
+		{
+			printf("Pos Setted\n");
+			app->input.pointed_x = app->input.latest_x;
+			app->input.pointed_y = app->input.latest_y;
 		}
 	}
 	return (0);
@@ -59,19 +75,27 @@ static int	_key_up_hook(int keycode, void *param)
 	return (0);
 }
 
+static int _get_mouse_flag(int button)
+{
+	if (button == MLX_MB_LEFT)
+		return (MLX_MOD_MOUSE_LEFT);
+	else if (button == MLX_MB_RIGHT)
+		return (MLX_MOD_MOUSE_RIGHT);
+	else if (button == MLX_MB_OTHER)
+		return (MLX_MOD_MOUSE_OTHER);
+	return (MLX_NO_MOD);
+}
+
 static int	_mouse_down_hook(int button, int x, int y, void *param)
 {
 	t_fdf *const	app = param;
+	const int		flag = _get_mouse_flag(button);
 
 	if (x < 0 || x >= app->win_width || y < 0 || y >= app->win_height)
 		return (0);
 	printf("Mouse Down %d, %d, %d\n", button, x, y);
-	if (button == MLX_MB_LEFT)
-		set_flag(&app->input.pressed, MLX_MOD_MOUSE_LEFT);
-	else if (button == MLX_MB_RIGHT)
-		set_flag(&app->input.pressed, MLX_MOD_MOUSE_RIGHT);
-	else if (button == MLX_MB_OTHER)
-		set_flag(&app->input.pressed, MLX_MOD_MOUSE_OTHER);
+	if (flag != MLX_NO_MOD)
+		set_flag(&app->input.pressed, flag);
 	else
 	{
 		//Wheel position bug
@@ -83,14 +107,11 @@ static int	_mouse_down_hook(int button, int x, int y, void *param)
 static int	_mouse_up_hook(int button, int x, int y, void *param)
 {
 	t_fdf *const	app = param;
+	const int		flag = _get_mouse_flag(button);
 
 	printf("Mouse Up %d, %d, %d\n", button, x, y);
-	if (button == MLX_MB_LEFT)
-		reset_flag(&app->input.pressed, MLX_MOD_MOUSE_LEFT);
-	else if (button == MLX_MB_RIGHT)
-		reset_flag(&app->input.pressed, MLX_MOD_MOUSE_RIGHT);
-	else if (button == MLX_MB_OTHER)
-		reset_flag(&app->input.pressed, MLX_MOD_MOUSE_OTHER);
+	if (flag != MLX_NO_MOD)
+		reset_flag(&app->input.pressed, flag);
 	return (0);
 }
 
@@ -102,6 +123,8 @@ static int	_mouse_move_hook(int x, int y, void *param)
 	//printf("Mouse Move Hook %d, %d\n", x, y);
 	if (x < 0 || x >= app->win_width || y < 0 || y >= app->win_height)
 		return (0);
+	app->input.latest_x = x;
+	app->input.latest_y = y;
 	color = 0;
 	if (has_flag(app->input.pressed, MLX_MOD_MOUSE_LEFT))
 		color |= 0xFF0000;
