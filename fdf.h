@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/18 21:40:59 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/20 18:51:38 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ typedef struct s_fdf
 {
 	const char	*map_path;
 	void		*mlx_ptr;
+	int			win_width;
+	int			win_height;
 	void		*win_ptr;
 }	t_fdf;
 
@@ -219,7 +221,8 @@ enum e_mlx_mouse_button
  * MLX_MOD_CAPSLOCK = 16,
  * MLX_MOD_FUNCTION = 23
  */
-enum e_modifiers {
+enum e_modifiers
+{
 	MLX_MOD_LCONTROL = 0,
 	MLX_MOD_LSHIFT = 1,
 	MLX_MOD_RSHIFT = 2,

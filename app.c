@@ -6,11 +6,11 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/19 09:58:37 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/20 18:55:35 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minilibx/mlx.h"
+#include "mlx.h"
 
 #include "fdf.h"
 #include "get_next_line.h"
@@ -40,7 +40,7 @@ static int	_mouse_hook(int button, int x, int y, void *param)
 	const t_fdf	*app = param;
 	int			color;
 
-	if (x < 0 || y < 0)
+	if (x < 0 || x >= app->win_width || y < 0 || y >= app->win_height)
 		return (0);
 	printf("Mouse Hook %d, %d, %d\n", button, x, y);
 	color = 0xFFFFFF;
@@ -50,6 +50,12 @@ static int	_mouse_hook(int button, int x, int y, void *param)
 		color = 0x0000FF;
 	else if (button == MLX_MB_OTHER)
 		color = 0x00FF00;
+	else
+	{
+		//Wheel position bug
+		y = (app->win_height - 1) - y;
+		color = 0xFFFF00;
+	}
 	mlx_pixel_put(app->mlx_ptr, app->win_ptr, x, y, color);
 	return (0);
 }
@@ -59,7 +65,7 @@ static int	_mouse_move_hook(int x, int y, void *param)
 	const t_fdf	*app = param;
 	int			color;
 
-	if (x < 0 || y < 0)
+	if (x < 0 || x >= app->win_width || y < 0 || y >= app->win_height)
 		return (0);
 	printf("Mouse Move Hook %d, %d\n", x, y);
 	color = 0xFFFFFF;
@@ -87,7 +93,9 @@ int	main(int argc, char *argv[])
 	app.mlx_ptr = mlx_init();
 	if (app.mlx_ptr == NULL)
 		return (EXIT_FAILURE);
-	app.win_ptr = mlx_new_window(app.mlx_ptr, 800, 600, "Test");
+	app.win_width = 800;
+	app.win_height = 600;
+	app.win_ptr = mlx_new_window(app.mlx_ptr, app.win_width, app.win_height, "Test");
 	if (app.win_ptr == NULL)
 		return (EXIT_FAILURE);
 	printf("%lf ; %lf\n", sin(M_PI / 2), cos(M_PI / 2));

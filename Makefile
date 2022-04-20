@@ -30,15 +30,12 @@ TARGET = fdf
 SRCS = $(SRCS_BASE) $(SRCS_GNL)
 OBJS = $(OBJS_BASE) $(OBJS_GNL)
 
-#DEP_DIR = minilibx_macos
-#DEP_NAME = libmlx.a
-#DEP_HOOK = 
-DEP_DIR = minilibx
-DEP_NAME = libmlx.dylib
-DEP_HOOK = INC=-I. INC+=-O
+MLX_DIR = minilibx_mms_20210621
+MLX_NAME = libmlx.dylib
+MLX_HOOK = OPTI=-Ounchecked
 
 LDFLAGS += -lm
-LDFLAGS += -L$(DEP_DIR) -lmlx -framework OpenGL -framework AppKit
+LDFLAGS += -I$(MLX_DIR) -L$(MLX_DIR) -lmlx -framework OpenGL -framework AppKit
 
 C_SANITIZER_FLAGS = address undefined
 CFLAGS += $(addprefix -fsanitize=, $(C_SANITIZER_FLAGS))
@@ -68,13 +65,13 @@ $(OBJS_GNL): $(HEADER_GNL)
 $(addprefix $(OBJECTS_DIR), %.o): %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(TARGET): $(OBJS) | $(DEP_NAME)
+$(TARGET): $(OBJS) | $(MLX_NAME)
 	$(CC) -o $@ $(LDFLAGS) $^
 
 dclean:
-	$(RM) $(DEP_NAME)
-	$(MAKE) -C $(DEP_DIR) clean
+	$(RM) $(MLX_NAME)
+	$(MAKE) -C $(MLX_DIR) clean
 
-$(DEP_NAME):
-	$(MAKE) -C $(DEP_DIR) all $(DEP_HOOK)
-	cp $(DEP_DIR)/$(DEP_NAME) .
+$(MLX_NAME):
+	$(MAKE) -C $(MLX_DIR) all $(MLX_HOOK)
+	cp $(MLX_DIR)/$(MLX_NAME) .
