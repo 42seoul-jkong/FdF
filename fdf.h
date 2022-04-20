@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/20 18:51:38 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/20 20:59:51 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 
 # include <stdlib.h>
 
+typedef struct s_input_sys
+{
+	int	pressed;
+}	t_input_sys;
+
 typedef struct s_fdf
 {
 	const char	*map_path;
@@ -22,6 +27,7 @@ typedef struct s_fdf
 	int			win_width;
 	int			win_height;
 	void		*win_ptr;
+	t_input_sys	input;
 }	t_fdf;
 
 /*
@@ -223,13 +229,17 @@ enum e_mlx_mouse_button
  */
 enum e_modifiers
 {
-	MLX_MOD_LCONTROL = 0,
-	MLX_MOD_LSHIFT = 1,
-	MLX_MOD_RSHIFT = 2,
-	MLX_MOD_LCMD = 3,
-	MLX_MOD_RCMD = 4,
-	MLX_MOD_LOPTION = 5,
-	MLX_MOD_ROPTION = 6
+	MLX_MOD_LCONTROL,
+	MLX_MOD_LSHIFT,
+	MLX_MOD_RSHIFT,
+	MLX_MOD_LCMD,
+	MLX_MOD_RCMD,
+	MLX_MOD_LOPTION,
+	MLX_MOD_ROPTION,
+	NO_MLX_MOD_KEY,
+	MLX_MOD_MOUSE_LEFT,
+	MLX_MOD_MOUSE_RIGHT,
+	MLX_MOD_MOUSE_OTHER
 };
 
 int		fdf(void);
@@ -243,5 +253,9 @@ void	*ft_calloc(size_t count, size_t size);
 size_t	ft_split_count(const char *s, const char *set);
 char	**ft_split_free(char **ptr);
 char	**ft_split(const char *s, const char *set);
+
+void	set_flag(int *ptr, int index);
+void	reset_flag(int *ptr, int index);
+int		has_flag(int flags, int index);
 
 #endif

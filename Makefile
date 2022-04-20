@@ -18,7 +18,7 @@ RM = rm -f
 
 OBJECTS_DIR = objs/
 
-SRCS_BASE = app.c libft.c libft_split.c
+SRCS_BASE = app.c libft.c libft_split.c util_flag.c
 OBJS_BASE = $(addprefix $(OBJECTS_DIR), $(SRCS_BASE:.c=.o))
 HEADER_BASE = fdf.h
 
@@ -30,12 +30,14 @@ TARGET = fdf
 SRCS = $(SRCS_BASE) $(SRCS_GNL)
 OBJS = $(OBJS_BASE) $(OBJS_GNL)
 
+MLX = mlx
+MLX_TYPE = dylib
 MLX_DIR = minilibx_mms_20210621
-MLX_NAME = libmlx.dylib
+MLX_NAME = lib$(MLX).$(MLX_TYPE)
 MLX_HOOK = OPTI=-Ounchecked
 
 LDFLAGS += -lm
-LDFLAGS += -I$(MLX_DIR) -L$(MLX_DIR) -lmlx -framework OpenGL -framework AppKit
+LDFLAGS += -I$(MLX_DIR) -L$(MLX_DIR) -l$(MLX)
 
 C_SANITIZER_FLAGS = address undefined
 CFLAGS += $(addprefix -fsanitize=, $(C_SANITIZER_FLAGS))
