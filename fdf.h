@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/20 22:39:38 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/21 22:22:11 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,21 +15,56 @@
 
 # include <stdlib.h>
 
+typedef struct s_str_list
+{
+	char				*str;
+	struct s_str_list	*next;
+}	t_str_list;
+
+typedef struct s_map_loader
+{
+	t_str_list	*head;
+	size_t		count;
+}	t_map_loader;
+
+typedef struct s_point2
+{
+	int	x;
+	int	y;
+}	t_point2;
+
+typedef struct s_point2z
+{
+	size_t	x;
+	size_t	y;
+}	t_point2z;
+
+typedef struct s_fdf_point
+{
+	int	value;
+	int	color;
+}	t_fdf_point;
+
+typedef struct s_fdf_map
+{
+	size_t		*ref_count;
+	const char	*path;
+	t_fdf_point	*arr;
+	t_point2z	dim;
+}	t_fdf_map;
+
 typedef struct s_input_sys
 {
-	int	pressed;
-	int	latest_x;
-	int	latest_y;
-	int	pointed_x;
-	int	pointed_y;
+	int			pressed;
+	t_point2	latest;
+	t_point2	pointed;
 }	t_input_sys;
 
 typedef struct s_fdf
 {
-	const char	*map_path;
 	void		*mlx_ptr;
-	int			win_width;
-	int			win_height;
+	t_fdf_map	map;
+	t_point2	win_dim;
 	void		*win_ptr;
 	t_input_sys	input;
 }	t_fdf;
@@ -55,19 +90,19 @@ typedef struct s_fdf
  */
 
 /*
- *	Summary:
- *		Virtual keycodes
- *	
- *	Discussion:
- *		These constants are the virtual keycodes defined originally in
- *		Inside Mac Volume V, pg. V-191. They identify physical keys on a
- *		keyboard. Those constants with "ANSI" in the name are labeled
- *		according to the key position on an ANSI-standard US keyboard.
- *		For example, kVK_ANSI_A indicates the virtual keycode for the key
- *		with the letter 'A' in the US keyboard layout. Other keyboard
- *		layouts may have the 'A' key label on a different physical key;
- *		in this case, pressing 'A' will generate a different virtual
- *		keycode.
+ *  Summary:
+ *    Virtual keycodes
+ *  
+ *  Discussion:
+ *    These constants are the virtual keycodes defined originally in
+ *    Inside Mac Volume V, pg. V-191. They identify physical keys on a
+ *    keyboard. Those constants with "ANSI" in the name are labeled
+ *    according to the key position on an ANSI-standard US keyboard.
+ *    For example, kVK_ANSI_A indicates the virtual keycode for the key
+ *    with the letter 'A' in the US keyboard layout. Other keyboard
+ *    layouts may have the 'A' key label on a different physical key;
+ *    in this case, pressing 'A' will generate a different virtual
+ *    keycode.
  */
 enum e_vk
 {
@@ -193,7 +228,7 @@ enum e_vk_i
 };
 
 /*
- * Reference: mlx_window.swift#get_mouse_button
+ * Reference: mlx_window.swift#eventFuncts
  */
 enum e_mlx_event_index
 {
@@ -223,13 +258,16 @@ enum e_mlx_mouse_button
 };
 
 /*
- * Reference: Me with Keyboard
+ * Reference: mlx_window.swift#flagsChanged
+ * 
  * DO NOT USE VALUES FOLLOWING BELOW
+ *   MLX_MOD_UNKNOWN = 8,
+ *   MLX_MOD_RCONTROL = 13,
+ *   MLX_MOD_CAPSLOCK = 16,
+ *   MLX_MOD_FUNCTION = 23
+ * 
  * Initially (MLX_MOD_UNKNOWN) is returned unconditionally.
- * MLX_MOD_UNKNOWN = 8,
- * MLX_MOD_RCONTROL = 13,
- * MLX_MOD_CAPSLOCK = 16,
- * MLX_MOD_FUNCTION = 23
+ * So after (NO_MLX_MOD_KEY), using as different meaning.
  */
 enum e_modifiers
 {
@@ -247,7 +285,8 @@ enum e_modifiers
 	MLX_NO_MOD
 };
 
-int		fdf(void);
+int		fdf_read_map(t_fdf_map *map, const char *path);
+int		fdf_load_map(t_fdf_map *map, t_map_loader *loader);
 
 size_t	ft_strlen(const char *s);
 void	*ft_memset(void *b, int c, size_t len);
@@ -259,8 +298,13 @@ size_t	ft_split_count(const char *s, const char *set);
 char	**ft_split_free(char **ptr);
 char	**ft_split(const char *s, const char *set);
 
+int		ft_strtoi(const char *str);
+
 void	set_flag(int *ptr, int index);
 void	reset_flag(int *ptr, int index);
 int		has_flag(int flags, int index);
+
+void	*malloc_safe(size_t size);
+void	*calloc_safe(size_t count, size_t size);
 
 #endif

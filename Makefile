@@ -18,7 +18,11 @@ RM = rm -f
 
 OBJECTS_DIR = objs/
 
-SRCS_BASE = app.c libft.c libft_split.c util_flag.c
+SRCS_BASE = app.c \
+			fdf_map.c fdf_map_read.c \
+			libft.c libft_split.c libft_strtoi.c \
+			util_flag.c \
+			safe_mem.c
 OBJS_BASE = $(addprefix $(OBJECTS_DIR), $(SRCS_BASE:.c=.o))
 HEADER_BASE = fdf.h
 
