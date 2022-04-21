@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/21 22:24:02 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/21 22:35:56 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,35 +28,38 @@ static void	_draw_line(t_fdf *unit, int x1, int y1, int x2, int y2, int color)
 }
 */
 
+static void	_on_key(t_fdf *unit, int flag, int keycode)
+{
+	//Test:
+	if (has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_C)
+	{
+		printf("Window Cleared\n");
+		mlx_clear_window(unit->mlx_ptr, unit->win_ptr);
+		unit->input.pointed.x = 0;
+		unit->input.pointed.y = 0;
+	}
+	if (has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_V)
+	{
+		printf("Pos Setted\n");
+		unit->input.pointed.x = unit->input.latest.x;
+		unit->input.pointed.y = unit->input.latest.y;
+	}
+}
+
 static int	_key_down_hook(int keycode, void *param)
 {
 	t_fdf *const	unit = param;
-	int *const		flag = &unit->input.pressed;
 
 	if (keycode > 0xFF)
 	{
 		keycode -= 0x100;
 		if (keycode < NO_MLX_MOD_KEY)
-			set_flag(flag, keycode);
+			set_flag(&unit->input.pressed, keycode);
 	}
 	else
 	{
 		printf("Key Down %d With %04X\n", keycode, unit->input.pressed);
-
-		//Test:
-		if (has_flag(*flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_C)
-		{
-			printf("Window Cleared\n");
-			mlx_clear_window(unit->mlx_ptr, unit->win_ptr);
-			unit->input.pointed.x = 0;
-			unit->input.pointed.y = 0;
-		}
-		if (has_flag(*flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_V)
-		{
-			printf("Pos Setted\n");
-			unit->input.pointed.x = unit->input.latest.x;
-			unit->input.pointed.y = unit->input.latest.y;
-		}
+		_on_key(unit, unit->input.pressed, keycode);
 	}
 	return (0);
 }
@@ -99,11 +102,6 @@ static int	_mouse_down_hook(int button, int x, int y, void *param)
 	printf("Mouse Down %d, %d, %d\n", button, x, y);
 	if (flag != MLX_NO_MOD)
 		set_flag(&unit->input.pressed, flag);
-	else
-	{
-		//Wheel position bug
-		y = (unit->win_dim.y - 1) - y;
-	}
 	return (0);
 }
 
@@ -139,41 +137,26 @@ static int	_mouse_move_hook(int x, int y, void *param)
 	return (0);
 }
 
-static int	_expose_hook(void *param)
-{
-	t_fdf *const	unit = param;
-
-	(void)unit;
-	printf("Expose\n");
-	return (0);
-}
-
 static int	_close_hook(void *param)
 {
-	t_fdf *const	unit = param;
-
-	printf("Close\n");
-	if (unit->map.ref_count)
-	{
-		printf("Exit One\n");
-		if (--*unit->map.ref_count == 0)
-			exit(EXIT_SUCCESS);
-		unit->map.ref_count = NULL;
-	}
+	(void)param;
+	exit(EXIT_SUCCESS);
 	return (0);
 }
 
 static int	_create_window(void *mlx_ptr, t_fdf *unit)
 {
-	int	width;
-	int	height;
+	int		width;
+	int		height;
+	char	*title;
 
 	width = 800;
 	height = 600;
+	title = unit->map.path;
 	unit->mlx_ptr = mlx_ptr;
 	unit->win_dim.x = width;
 	unit->win_dim.y = height;
-	unit->win_ptr = mlx_new_window(unit->mlx_ptr, width, height, "Test");
+	unit->win_ptr = mlx_new_window(unit->mlx_ptr, width, height, title);
 	if (unit->win_ptr == NULL)
 		return (0);
 	mlx_clear_window(unit->mlx_ptr, unit->win_ptr);
@@ -182,7 +165,6 @@ static int	_create_window(void *mlx_ptr, t_fdf *unit)
 	mlx_mouse_hook(unit->win_ptr, &_mouse_down_hook, unit);
 	mlx_hook(unit->win_ptr, MLX_EVENT_MOUSE_UP, 0, &_mouse_up_hook, unit);
 	mlx_hook(unit->win_ptr, MLX_EVENT_MOUSE_MOVE, 0, &_mouse_move_hook, unit);
-	mlx_expose_hook(unit->win_ptr, &_expose_hook, unit);
 	mlx_hook(unit->win_ptr, MLX_EVENT_CLOSE, 0, &_close_hook, unit);
 	return (1);
 }

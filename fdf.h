@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/21 22:22:11 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/21 22:32:58 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,7 @@ typedef struct s_fdf_point
 
 typedef struct s_fdf_map
 {
-	size_t		*ref_count;
-	const char	*path;
+	char		*path;
 	t_fdf_point	*arr;
 	t_point2z	dim;
 }	t_fdf_map;
@@ -285,7 +284,7 @@ enum e_modifiers
 	MLX_NO_MOD
 };
 
-int		fdf_read_map(t_fdf_map *map, const char *path);
+int		fdf_read_map(t_fdf_map *map, char *path);
 int		fdf_load_map(t_fdf_map *map, t_map_loader *loader);
 
 size_t	ft_strlen(const char *s);

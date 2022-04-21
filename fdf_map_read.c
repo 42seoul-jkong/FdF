@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 15:42:06 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/21 22:21:13 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/21 22:32:01 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ static void	_free_loader(t_map_loader *loader)
 	free(loader);
 }
 
-int	fdf_read_map(t_fdf_map *map, const char *path)
+int	fdf_read_map(t_fdf_map *map, char *path)
 {
 	int				result;
 	t_map_loader	*loader;
