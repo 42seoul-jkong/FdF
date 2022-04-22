@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/21 22:35:56 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/22 15:39:22 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,41 @@
 
 #include <stdio.h>
 
-/*
-static void	_draw_line(t_fdf *unit, int x1, int y1, int x2, int y2, int color)
+static size_t	_abs_diff(size_t a, size_t b)
 {
-	//TODO: ...
-	(void)x2, (void)y2;
-	mlx_pixel_put(unit->mlx_ptr, unit->win_ptr, x1, y1, color);
+	if (a < b)
+		return (b - a);
+	else
+		return (a - b);
 }
-*/
+
+void	draw_line(t_fdf *unit, t_point2 a, t_point2 b, int color)
+{
+	const t_point2	dst = {_abs_diff(a.x, b.x), _abs_diff(a.y, b.y)};
+	const t_point2	sgn = {a.x < b.x, a.y < b.y};
+	ssize_t			err;
+	t_point2		t;
+
+	err = dst.x - dst.y;
+	while (1)
+	{
+		mlx_pixel_put(unit->mlx_ptr, unit->win_ptr, a.x, a.y, color);
+		if (a.x == b.x && a.y == b.y)
+			break ;
+		t.x = (ssize_t)(2 * err - dst.x) < 0;
+		t.y = (ssize_t)(2 * err + dst.y) > 0;
+		if (t.y)
+		{
+			err -= dst.y;
+			a.x += ((int)sgn.x << 1) - 1;
+		}
+		if (t.x)
+		{
+			err += dst.x;
+			a.y += ((int)sgn.y << 1) - 1;
+		}
+	}
+}
 
 static void	_on_key(t_fdf *unit, int flag, int keycode)
 {
@@ -43,6 +70,17 @@ static void	_on_key(t_fdf *unit, int flag, int keycode)
 		printf("Pos Setted\n");
 		unit->input.pointed.x = unit->input.latest.x;
 		unit->input.pointed.y = unit->input.latest.y;
+	}
+	if (has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_X)
+	{
+		int color = 0;
+		if (has_flag(unit->input.pressed, MLX_MOD_MOUSE_LEFT))
+			color |= 0x990000;
+		if (has_flag(unit->input.pressed, MLX_MOD_MOUSE_OTHER))
+			color |= 0x009900;
+		if (has_flag(unit->input.pressed, MLX_MOD_MOUSE_RIGHT))
+			color |= 0x000099;
+		draw_line(unit, unit->input.pointed, unit->input.latest, color);
 	}
 }
 
@@ -97,7 +135,7 @@ static int	_mouse_down_hook(int button, int x, int y, void *param)
 	t_fdf *const	unit = param;
 	const int		flag = _get_mouse_flag(button);
 
-	if (x < 0 || x >= unit->win_dim.x || y < 0 || y >= unit->win_dim.y)
+	if (x < 0 || (size_t)x >= unit->win_dim.x || y < 0 || (size_t)y >= unit->win_dim.y)
 		return (0);
 	printf("Mouse Down %d, %d, %d\n", button, x, y);
 	if (flag != MLX_NO_MOD)
@@ -122,7 +160,7 @@ static int	_mouse_move_hook(int x, int y, void *param)
 	int				color;
 
 	//printf("Mouse Move Hook %d, %d\n", x, y);
-	if (x < 0 || x >= unit->win_dim.x || y < 0 || y >= unit->win_dim.y)
+	if (x < 0 || (size_t)x >= unit->win_dim.x || y < 0 || (size_t)y >= unit->win_dim.y)
 		return (0);
 	unit->input.latest.x = x;
 	unit->input.latest.y = y;
@@ -157,7 +195,7 @@ static int	_create_window(void *mlx_ptr, t_fdf *unit)
 	unit->win_dim.x = width;
 	unit->win_dim.y = height;
 	unit->win_ptr = mlx_new_window(unit->mlx_ptr, width, height, title);
-	if (unit->win_ptr == NULL)
+	if (!unit->win_ptr)
 		return (0);
 	mlx_clear_window(unit->mlx_ptr, unit->win_ptr);
 	mlx_hook(unit->win_ptr, MLX_EVENT_KEY_DOWN, 0, &_key_down_hook, unit);
@@ -177,22 +215,21 @@ int	main(int argc, char *argv[])
 	int			i;
 
 	if (argc < 2)
-	{
 		return (EXIT_FAILURE);
-	}
 	mlx_ptr = mlx_init();
-	if (mlx_ptr == NULL)
+	if (!mlx_ptr)
 		return (EXIT_FAILURE);
 	begin = 1;
 	fdf_arr = ft_calloc(argc - begin, sizeof(*fdf_arr));
 	i = 0;
 	while (i < argc - begin)
 	{
-		fdf_read_map(&fdf_arr[i].map, argv[begin + i]);
-		_create_window(mlx_ptr, &fdf_arr[i]);
+		if (fdf_read_map(&fdf_arr[i].map, argv[begin + i]))
+			_create_window(mlx_ptr, &fdf_arr[i]);
+		else
+			printf("Map Error %d\n", i);
 		i++;
 	}
-	printf("%lf ; %lf\n", sin(M_PI / 2), cos(M_PI / 2));
 	mlx_loop(mlx_ptr);
 	free(fdf_arr);
 	return (EXIT_SUCCESS);

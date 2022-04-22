@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/21 22:32:58 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/22 12:01:26 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,9 @@ typedef struct s_map_loader
 
 typedef struct s_point2
 {
-	int	x;
-	int	y;
-}	t_point2;
-
-typedef struct s_point2z
-{
 	size_t	x;
 	size_t	y;
-}	t_point2z;
+}	t_point2;
 
 typedef struct s_fdf_point
 {
@@ -49,7 +43,7 @@ typedef struct s_fdf_map
 {
 	char		*path;
 	t_fdf_point	*arr;
-	t_point2z	dim;
+	t_point2	dim;
 }	t_fdf_map;
 
 typedef struct s_input_sys

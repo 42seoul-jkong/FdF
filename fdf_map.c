@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 15:42:06 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/21 22:03:47 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/21 22:39:33 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	_load_line(t_fdf_map *map, size_t y, char **line)
 	size_t		x;
 
 	x = 0;
-	while (line[x])
+	while (line[x] && x < map->dim.x)
 	{
 		info = ft_split(line[x], ",");
 		if (!info)
@@ -41,7 +41,7 @@ static int	_load_line(t_fdf_map *map, size_t y, char **line)
 		ft_split_free(info);
 		x++;
 	}
-	return (1);
+	return (x == map->dim.x);
 }
 
 int	fdf_load_map(t_fdf_map *map, t_map_loader *loader)
