@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/22 12:01:26 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/25 21:51:13 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,37 @@
 # define FDF_H
 
 # include <stdlib.h>
+
+# ifndef VECTOR_SIZE
+#  define VECTOR_SIZE 1024
+# endif
+
+typedef struct s_point2
+{
+	size_t	x;
+	size_t	y;
+}	t_point2;
+
+typedef struct s_point3
+{
+	size_t	x;
+	size_t	y;
+	size_t	z;
+}	t_point3;
+
+typedef struct s_point3f
+{
+	double	x;
+	double	y;
+	double	z;
+}	t_point3f;
+
+typedef unsigned int	t_pixel;
+
+enum e_bit_map_constant
+{
+	BIT_COUNT = 8
+};
 
 typedef struct s_str_list
 {
@@ -26,12 +57,6 @@ typedef struct s_map_loader
 	t_str_list	*head;
 	size_t		count;
 }	t_map_loader;
-
-typedef struct s_point2
-{
-	size_t	x;
-	size_t	y;
-}	t_point2;
 
 typedef struct s_fdf_point
 {
@@ -59,27 +84,21 @@ typedef struct s_fdf
 	t_fdf_map	map;
 	t_point2	win_dim;
 	void		*win_ptr;
+	void		*img_ptr;
 	t_input_sys	input;
+	double		yaw;
+	double		pitch;
+	double		roll;
+	int			dx;
+	int			dy;
+	int			dz;
 }	t_fdf;
 
 /*
  * Reference: 
- * /
- * Library/
- * Developer/
- * CommandLineTools/
- * SDKs/MacOSX.sdk/
- * System/Library/
- * Frameworks/
- * Carbon.framework/
- * Versions/
- * A/
- * Frameworks/
- * HIToolbox.framework/
- * Versions/
- * A/
- * Headers/
- * Events.h
+ * /Library/Developer/CommandLineTools/
+ * SDKs/MacOSX.sdk/System/Library/Frameworks/Carbon.framework/
+ * Versions/A/Frameworks/HIToolbox.framework/Versions/A/Headers/Events.h
  */
 
 /*
@@ -278,26 +297,36 @@ enum e_modifiers
 	MLX_NO_MOD
 };
 
-int		fdf_read_map(t_fdf_map *map, char *path);
-int		fdf_load_map(t_fdf_map *map, t_map_loader *loader);
+int			fdf_read_map(t_fdf_map *map, char *path);
+int			fdf_load_map(t_fdf_map *map, t_map_loader *loader);
+t_fdf_point	*get_pos(t_fdf_map *map, size_t x, size_t y);
 
-size_t	ft_strlen(const char *s);
-void	*ft_memset(void *b, int c, size_t len);
-void	*ft_memcpy(void *dst, const void *src, size_t n);
-int		ft_strcmp(const char *s1, const char *s2);
-void	*ft_calloc(size_t count, size_t size);
+void		fill_image(t_fdf *unit, unsigned char byte);
+void		put_pixel(t_fdf *unit, size_t x, size_t y, int color);
+void		draw_line(t_fdf *unit, t_point2 a, t_point2 b, int color);
+void		refresh_window(t_fdf *unit);
 
-size_t	ft_split_count(const char *s, const char *set);
-char	**ft_split_free(char **ptr);
-char	**ft_split(const char *s, const char *set);
+void		rotate_yaw(t_point3f *pt, double yaw);
+void		rotate_pitch(t_point3f *pt, double pitch);
+void		rotate_roll(t_point3f *pt, double roll);
 
-int		ft_strtoi(const char *str);
+size_t		ft_strlen(const char *s);
+void		*ft_memset(void *b, int c, size_t len);
+void		*ft_memcpy(void *dst, const void *src, size_t n);
+int			ft_strcmp(const char *s1, const char *s2);
+void		*ft_calloc(size_t count, size_t size);
 
-void	set_flag(int *ptr, int index);
-void	reset_flag(int *ptr, int index);
-int		has_flag(int flags, int index);
+size_t		ft_split_count(const char *s, const char *set);
+char		**ft_split_free(char **ptr);
+char		**ft_split(const char *s, const char *set);
 
-void	*malloc_safe(size_t size);
-void	*calloc_safe(size_t count, size_t size);
+int			ft_strtoi(const char *str);
+
+void		set_flag(int *ptr, int index);
+void		reset_flag(int *ptr, int index);
+int			has_flag(int flags, int index);
+
+void		*malloc_safe(size_t size);
+void		*calloc_safe(size_t count, size_t size);
 
 #endif

@@ -6,74 +6,69 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/22 15:39:22 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/25 22:30:11 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "fdf.h"
+
 #include "mlx.h"
 
-#include "fdf.h"
-#include "get_next_line.h"
-
+//Test
 #include <math.h>
-
 #include <stdio.h>
 
-static size_t	_abs_diff(size_t a, size_t b)
+static void _draw_fdf(t_fdf *unit)
 {
-	if (a < b)
-		return (b - a);
-	else
-		return (a - b);
-}
+	fill_image(unit, 0xAA);
 
-void	draw_line(t_fdf *unit, t_point2 a, t_point2 b, int color)
-{
-	const t_point2	dst = {_abs_diff(a.x, b.x), _abs_diff(a.y, b.y)};
-	const t_point2	sgn = {a.x < b.x, a.y < b.y};
-	ssize_t			err;
-	t_point2		t;
-
-	err = dst.x - dst.y;
-	while (1)
+	for (size_t i = 0; i < unit->map.dim.x; i++)
 	{
-		mlx_pixel_put(unit->mlx_ptr, unit->win_ptr, a.x, a.y, color);
-		if (a.x == b.x && a.y == b.y)
-			break ;
-		t.x = (ssize_t)(2 * err - dst.x) < 0;
-		t.y = (ssize_t)(2 * err + dst.y) > 0;
-		if (t.y)
+		for (size_t j = 0; j < unit->map.dim.y; j++)
 		{
-			err -= dst.y;
-			a.x += ((int)sgn.x << 1) - 1;
-		}
-		if (t.x)
-		{
-			err += dst.x;
-			a.y += ((int)sgn.y << 1) - 1;
+			const t_fdf_point	*pos = get_pos(&unit->map, i, j);
+			t_point3f			pt;
+			t_point2			scr;
+			size_t				k;
+
+			k = unit->win_dim.x / unit->map.dim.x; //unit->win_dim.y / unit->map.dim.y
+			pt = (t_point3f){k * i, k * j, k * pos->value};
+			rotate_yaw(&pt, unit->yaw);
+			rotate_pitch(&pt, unit->pitch);
+			rotate_roll(&pt, unit->roll);
+			pt.x += unit->dx;
+			pt.y += unit->dy;
+			pt.z += unit->dz;
+			scr.x = (ssize_t)round(pt.x);
+			scr.y = (ssize_t)round(pt.y);
+			put_pixel(unit, scr.x, scr.y, pos->color);
 		}
 	}
+	refresh_window(unit);
 }
 
 static void	_on_key(t_fdf *unit, int flag, int keycode)
 {
 	//Test:
-	if (has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_C)
+	if (has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_X)
 	{
 		printf("Window Cleared\n");
-		mlx_clear_window(unit->mlx_ptr, unit->win_ptr);
+		fill_image(unit, 0xCC);
 		unit->input.pointed.x = 0;
 		unit->input.pointed.y = 0;
+		refresh_window(unit);
 	}
-	if (has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_V)
+	if (has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_C)
 	{
 		printf("Pos Setted\n");
 		unit->input.pointed.x = unit->input.latest.x;
 		unit->input.pointed.y = unit->input.latest.y;
 	}
-	if (has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_X)
+	if (has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_V)
 	{
-		int color = 0;
+		int	color;
+
+		color = 0;
 		if (has_flag(unit->input.pressed, MLX_MOD_MOUSE_LEFT))
 			color |= 0x990000;
 		if (has_flag(unit->input.pressed, MLX_MOD_MOUSE_OTHER))
@@ -81,7 +76,35 @@ static void	_on_key(t_fdf *unit, int flag, int keycode)
 		if (has_flag(unit->input.pressed, MLX_MOD_MOUSE_RIGHT))
 			color |= 0x000099;
 		draw_line(unit, unit->input.pointed, unit->input.latest, color);
+		refresh_window(unit);
 	}
+	if (keycode == kVK_ANSI_Q)
+		unit->yaw += M_PI / 90;
+	else if (keycode == kVK_ANSI_A)
+		unit->yaw -= M_PI / 90;
+	else if (keycode == kVK_ANSI_E)
+		unit->pitch += M_PI / 90;
+	else if (keycode == kVK_ANSI_D)
+		unit->pitch -= M_PI / 90;
+	else if (keycode == kVK_ANSI_W)
+		unit->roll += M_PI / 90;
+	else if (keycode == kVK_ANSI_S)
+		unit->roll -= M_PI / 90;
+	else if (keycode == kVK_UpArrow)
+		unit->dx += 30;
+	else if (keycode == kVK_DownArrow)
+		unit->dx -= 30;
+	else if (keycode == kVK_LeftArrow)
+		unit->dy += 30;
+	else if (keycode == kVK_RightArrow)
+		unit->dy -= 30;
+	else if (keycode == kVK_ANSI_Z)
+		unit->dz += 30;
+	else if (keycode == kVK_ANSI_X)
+		unit->dz -= 30;
+	else if (!(has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_Z))
+		return ;
+	_draw_fdf(unit);
 }
 
 static int	_key_down_hook(int keycode, void *param)
@@ -135,7 +158,7 @@ static int	_mouse_down_hook(int button, int x, int y, void *param)
 	t_fdf *const	unit = param;
 	const int		flag = _get_mouse_flag(button);
 
-	if (x < 0 || (size_t)x >= unit->win_dim.x || y < 0 || (size_t)y >= unit->win_dim.y)
+	if ((size_t)x >= unit->win_dim.x || (size_t)y >= unit->win_dim.y)
 		return (0);
 	printf("Mouse Down %d, %d, %d\n", button, x, y);
 	if (flag != MLX_NO_MOD)
@@ -160,8 +183,6 @@ static int	_mouse_move_hook(int x, int y, void *param)
 	int				color;
 
 	//printf("Mouse Move Hook %d, %d\n", x, y);
-	if (x < 0 || (size_t)x >= unit->win_dim.x || y < 0 || (size_t)y >= unit->win_dim.y)
-		return (0);
 	unit->input.latest.x = x;
 	unit->input.latest.y = y;
 	color = 0;
@@ -171,7 +192,16 @@ static int	_mouse_move_hook(int x, int y, void *param)
 		color |= 0x00FF00;
 	if (has_flag(unit->input.pressed, MLX_MOD_MOUSE_RIGHT))
 		color |= 0x0000FF;
-	mlx_pixel_put(unit->mlx_ptr, unit->win_ptr, x, y, color);
+	put_pixel(unit, x, y, color);
+	refresh_window(unit);
+	return (0);
+}
+
+static int	_expose_hook(void *param)
+{
+	t_fdf *const	unit = param;
+
+	refresh_window(unit);
 	return (0);
 }
 
@@ -197,12 +227,17 @@ static int	_create_window(void *mlx_ptr, t_fdf *unit)
 	unit->win_ptr = mlx_new_window(unit->mlx_ptr, width, height, title);
 	if (!unit->win_ptr)
 		return (0);
-	mlx_clear_window(unit->mlx_ptr, unit->win_ptr);
+	unit->img_ptr = mlx_new_image(unit->mlx_ptr, width, height);
+	if (!unit->img_ptr)
+		return (0);
+	fill_image(unit, 0xCC);
+	refresh_window(unit);
 	mlx_hook(unit->win_ptr, MLX_EVENT_KEY_DOWN, 0, &_key_down_hook, unit);
 	mlx_key_hook(unit->win_ptr, &_key_up_hook, unit);
 	mlx_mouse_hook(unit->win_ptr, &_mouse_down_hook, unit);
 	mlx_hook(unit->win_ptr, MLX_EVENT_MOUSE_UP, 0, &_mouse_up_hook, unit);
 	mlx_hook(unit->win_ptr, MLX_EVENT_MOUSE_MOVE, 0, &_mouse_move_hook, unit);
+	mlx_expose_hook(unit->win_ptr, &_expose_hook, unit);
 	mlx_hook(unit->win_ptr, MLX_EVENT_CLOSE, 0, &_close_hook, unit);
 	return (1);
 }

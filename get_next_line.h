@@ -6,13 +6,14 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 13:44:31 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/18 13:04:39 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/25 16:12:12 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
+# include <stdlib.h>
 # include <unistd.h>
 
 # ifndef BUFFER_SIZE

@@ -6,13 +6,11 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 13:44:41 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/18 13:05:21 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/25 16:12:07 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-
-#include <stdlib.h>
 
 t_pair	*new_pair(int fd)
 {

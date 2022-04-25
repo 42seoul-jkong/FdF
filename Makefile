@@ -20,6 +20,8 @@ OBJECTS_DIR = objs/
 
 SRCS_BASE = app.c \
 			fdf_map.c fdf_map_read.c \
+			draw.c draw_line.c \
+			coordinate.c rotate.c \
 			libft.c libft_split.c libft_strtoi.c \
 			util_flag.c \
 			safe_mem.c
@@ -41,7 +43,8 @@ MLX_NAME = lib$(MLX).$(MLX_TYPE)
 MLX_HOOK = OPTI=-Ounchecked
 
 LDFLAGS += -lm
-LDFLAGS += -I$(MLX_DIR) -L$(MLX_DIR) -l$(MLX)
+CFLAGS += -I$(MLX_DIR)
+LDFLAGS += -L$(MLX_DIR) -l$(MLX)
 
 C_SANITIZER_FLAGS = address undefined
 CFLAGS += $(addprefix -fsanitize=, $(C_SANITIZER_FLAGS))
