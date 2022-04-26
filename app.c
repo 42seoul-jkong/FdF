@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/25 22:30:11 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/26 21:46:43 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,30 +18,53 @@
 #include <math.h>
 #include <stdio.h>
 
-static void _draw_fdf(t_fdf *unit)
+static void	_draw_fdf(t_fdf *unit)
 {
 	fill_image(unit, 0xAA);
-
-	for (size_t i = 0; i < unit->map.dim.x; i++)
+	for (long i = 0; i < unit->map.dim.x; i++)
 	{
-		for (size_t j = 0; j < unit->map.dim.y; j++)
+		for (long j = 0; j < unit->map.dim.y; j++)
 		{
-			const t_fdf_point	*pos = get_pos(&unit->map, i, j);
+			t_fdf_point *const	pos = get_pos(&unit->map, i, j);
 			t_point3f			pt;
-			t_point2			scr;
-			size_t				k;
+			t_point3f			center;
 
-			k = unit->win_dim.x / unit->map.dim.x; //unit->win_dim.y / unit->map.dim.y
-			pt = (t_point3f){k * i, k * j, k * pos->value};
-			rotate_yaw(&pt, unit->yaw);
-			rotate_pitch(&pt, unit->pitch);
-			rotate_roll(&pt, unit->roll);
-			pt.x += unit->dx;
-			pt.y += unit->dy;
-			pt.z += unit->dz;
-			scr.x = (ssize_t)round(pt.x);
-			scr.y = (ssize_t)round(pt.y);
-			put_pixel(unit, scr.x, scr.y, pos->color);
+			pt = (t_point3f){i, j, pos->value};
+			//center = zero_z_2(center_2(unit->map.dim));
+			center = (t_point3f){unit->map.dim.x / 2, unit->map.dim.y / 2, 0};
+			scale(&pt, unit->scale);
+			scale(&center, unit->scale);
+			translate(&pt, negative_3f(center));
+			rotate_pitch(&pt, unit->rotate.x);
+			rotate_roll(&pt, unit->rotate.y);
+			rotate_yaw(&pt, unit->rotate.z);
+			translate(&pt, center);
+			translate(&pt, unit->translate);
+			pos->coord = integer_3f(pt);
+		}
+	}
+	ft_memset(unit->depth, 0, unit->win_dim.x * unit->win_dim.y * sizeof(*unit->depth));
+	for (long i = 0; i < unit->map.dim.x; i++)
+	{
+		for (long j = 0; j < unit->map.dim.y; j++)
+		{
+			t_fdf_point *const	pos = get_pos(&unit->map, i, j);
+			t_fdf_point			*pos_px;
+			t_fdf_point			*pos_py;
+
+			if (i > 0)
+				pos_px = get_pos(&unit->map, i - 1, j);
+			else
+				pos_px = NULL;
+			if (j > 0)
+				pos_py = get_pos(&unit->map, i, j - 1);
+			else
+				pos_py = NULL;
+			if (pos_px)
+				draw_line(unit, drop_z_3(pos_px->coord), drop_z_3(pos->coord), (t_color){pos_px->color, pos->color});
+			if (pos_py)
+				draw_line(unit, drop_z_3(pos_py->coord), drop_z_3(pos->coord), (t_color){pos_py->color, pos->color});
+			put_pixel(unit, pos->coord.x, pos->coord.y, pos->color);
 		}
 	}
 	refresh_window(unit);
@@ -75,33 +98,37 @@ static void	_on_key(t_fdf *unit, int flag, int keycode)
 			color |= 0x009900;
 		if (has_flag(unit->input.pressed, MLX_MOD_MOUSE_RIGHT))
 			color |= 0x000099;
-		draw_line(unit, unit->input.pointed, unit->input.latest, color);
+		draw_line(unit, unit->input.pointed, unit->input.latest, (t_color){color, color / 3});
 		refresh_window(unit);
 	}
 	if (keycode == kVK_ANSI_Q)
-		unit->yaw += M_PI / 90;
+		unit->rotate.x += M_PI / 90;
 	else if (keycode == kVK_ANSI_A)
-		unit->yaw -= M_PI / 90;
+		unit->rotate.x -= M_PI / 90;
 	else if (keycode == kVK_ANSI_E)
-		unit->pitch += M_PI / 90;
+		unit->rotate.y += M_PI / 90;
 	else if (keycode == kVK_ANSI_D)
-		unit->pitch -= M_PI / 90;
+		unit->rotate.y -= M_PI / 90;
 	else if (keycode == kVK_ANSI_W)
-		unit->roll += M_PI / 90;
+		unit->rotate.z += M_PI / 90;
 	else if (keycode == kVK_ANSI_S)
-		unit->roll -= M_PI / 90;
+		unit->rotate.z -= M_PI / 90;
 	else if (keycode == kVK_UpArrow)
-		unit->dx += 30;
+		unit->translate.x += 30;
 	else if (keycode == kVK_DownArrow)
-		unit->dx -= 30;
+		unit->translate.x -= 30;
 	else if (keycode == kVK_LeftArrow)
-		unit->dy += 30;
+		unit->translate.y += 30;
 	else if (keycode == kVK_RightArrow)
-		unit->dy -= 30;
+		unit->translate.y -= 30;
 	else if (keycode == kVK_ANSI_Z)
-		unit->dz += 30;
+		unit->translate.z += 30;
 	else if (keycode == kVK_ANSI_X)
-		unit->dz -= 30;
+		unit->translate.z -= 30;
+	else if (keycode == kVK_ANSI_Equal)
+		unit->scale *= 2;
+	else if (keycode == kVK_ANSI_Minus)
+		unit->scale *= 0.5;
 	else if (!(has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_Z))
 		return ;
 	_draw_fdf(unit);
@@ -158,7 +185,7 @@ static int	_mouse_down_hook(int button, int x, int y, void *param)
 	t_fdf *const	unit = param;
 	const int		flag = _get_mouse_flag(button);
 
-	if ((size_t)x >= unit->win_dim.x || (size_t)y >= unit->win_dim.y)
+	if (x < 0 || x >= unit->win_dim.x || y < 0 || y >= unit->win_dim.y)
 		return (0);
 	printf("Mouse Down %d, %d, %d\n", button, x, y);
 	if (flag != MLX_NO_MOD)
@@ -220,6 +247,7 @@ static int	_create_window(void *mlx_ptr, t_fdf *unit)
 
 	width = 800;
 	height = 600;
+	unit->scale = 1.0;
 	title = unit->map.path;
 	unit->mlx_ptr = mlx_ptr;
 	unit->win_dim.x = width;
@@ -230,6 +258,7 @@ static int	_create_window(void *mlx_ptr, t_fdf *unit)
 	unit->img_ptr = mlx_new_image(unit->mlx_ptr, width, height);
 	if (!unit->img_ptr)
 		return (0);
+	unit->depth = calloc_safe(width * height, sizeof(*unit->depth));
 	fill_image(unit, 0xCC);
 	refresh_window(unit);
 	mlx_hook(unit->win_ptr, MLX_EVENT_KEY_DOWN, 0, &_key_down_hook, unit);

@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 15:42:06 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/21 22:32:01 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/26 21:17:57 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ static t_map_loader	*_read_all_text(const char *path)
 	{
 		node = _next_str_node(fd);
 		_insert_str_node(&result->head, node);
-		result->count++;
+		if (node)
+			result->count++;
 		do_first = 0;
 	}
 	close(fd);
@@ -83,6 +84,7 @@ static void	_free_loader(t_map_loader *loader)
 		{
 			destruct = detach;
 			detach = detach->next;
+			free(destruct->str);
 			free(destruct);
 		}
 	}
@@ -99,7 +101,7 @@ int	fdf_read_map(t_fdf_map *map, char *path)
 	loader = _read_all_text(map->path);
 	if (loader && loader->head)
 	{
-		map->dim.x = ft_split_count(loader->head->str, " ");
+		map->dim.x = ft_split_count(loader->head->str, " \n");
 		map->dim.y = loader->count;
 		map->arr = calloc_safe(map->dim.x * map->dim.y, sizeof(*map->arr));
 		result = fdf_load_map(map, loader);

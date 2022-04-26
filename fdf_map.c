@@ -6,22 +6,22 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 15:42:06 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/25 21:30:17 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/26 19:51:41 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
-t_fdf_point	*get_pos(t_fdf_map *map, size_t x, size_t y)
+t_fdf_point	*get_pos(t_fdf_map *map, long x, long y)
 {
 	return (&map->arr[x + y * map->dim.x]);
 }
 
-static int	_load_line(t_fdf_map *map, size_t y, char **line)
+static int	_load_line(t_fdf_map *map, long y, char **line)
 {
 	char		**info;
 	t_fdf_point	*point;
-	size_t		x;
+	long		x;
 
 	x = 0;
 	while (line[x] && x < map->dim.x)
@@ -49,7 +49,7 @@ int	fdf_load_map(t_fdf_map *map, t_map_loader *loader)
 	int				result;
 	t_str_list		*node;
 	char			**line;
-	size_t			y;
+	long			y;
 
 	node = loader->head;
 	y = 0;

@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/25 21:51:13 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/26 22:21:38 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,15 @@
 
 typedef struct s_point2
 {
-	size_t	x;
-	size_t	y;
+	long	x;
+	long	y;
 }	t_point2;
 
 typedef struct s_point3
 {
-	size_t	x;
-	size_t	y;
-	size_t	z;
+	long	x;
+	long	y;
+	long	z;
 }	t_point3;
 
 typedef struct s_point3f
@@ -46,6 +46,12 @@ enum e_bit_map_constant
 	BIT_COUNT = 8
 };
 
+typedef struct s_color
+{
+	int	begin;
+	int	end;
+}	t_color;
+
 typedef struct s_str_list
 {
 	char				*str;
@@ -60,8 +66,9 @@ typedef struct s_map_loader
 
 typedef struct s_fdf_point
 {
-	int	value;
-	int	color;
+	int			value;
+	int			color;
+	t_point3	coord;
 }	t_fdf_point;
 
 typedef struct s_fdf_map
@@ -85,13 +92,11 @@ typedef struct s_fdf
 	t_point2	win_dim;
 	void		*win_ptr;
 	void		*img_ptr;
+	long		*depth;
 	t_input_sys	input;
-	double		yaw;
-	double		pitch;
-	double		roll;
-	int			dx;
-	int			dy;
-	int			dz;
+	t_point3f	rotate;
+	double		scale;
+	t_point3f	translate;
 }	t_fdf;
 
 /*
@@ -299,13 +304,26 @@ enum e_modifiers
 
 int			fdf_read_map(t_fdf_map *map, char *path);
 int			fdf_load_map(t_fdf_map *map, t_map_loader *loader);
-t_fdf_point	*get_pos(t_fdf_map *map, size_t x, size_t y);
+t_fdf_point	*get_pos(t_fdf_map *map, long x, long y);
 
 void		fill_image(t_fdf *unit, unsigned char byte);
-void		put_pixel(t_fdf *unit, size_t x, size_t y, int color);
-void		draw_line(t_fdf *unit, t_point2 a, t_point2 b, int color);
+void		put_pixel(t_fdf *unit, long x, long y, int color);
+void		draw_line(t_fdf *unit, t_point2 a, t_point2 b, t_color color);
 void		refresh_window(t_fdf *unit);
 
+void		clear_depth(t_fdf *unit);
+void		put_pixel_depth(t_fdf *unit, t_point3 pos, int color);
+
+int			get_color(t_color *range, double rate);
+
+t_point2	center_2(t_point2 pt);
+t_point3f	zero_z_2(t_point2 pt);
+t_point2	drop_z_3(t_point3 pt);
+t_point3	integer_3f(t_point3f pt);
+t_point3f	negative_3f(t_point3f pt);
+
+void		translate(t_point3f *pt, t_point3f delta);
+void		scale(t_point3f *pt, double k);
 void		rotate_yaw(t_point3f *pt, double yaw);
 void		rotate_pitch(t_point3f *pt, double pitch);
 void		rotate_roll(t_point3f *pt, double roll);

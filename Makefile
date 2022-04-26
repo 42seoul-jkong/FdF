@@ -20,8 +20,8 @@ OBJECTS_DIR = objs/
 
 SRCS_BASE = app.c \
 			fdf_map.c fdf_map_read.c \
-			draw.c draw_line.c \
-			coordinate.c rotate.c \
+			draw.c draw_line.c depth.c \
+			coordinate.c transform.c color.c \
 			libft.c libft_split.c libft_strtoi.c \
 			util_flag.c \
 			safe_mem.c

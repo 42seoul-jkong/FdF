@@ -1,18 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   rotate.c                                           :+:      :+:    :+:   */
+/*   transform.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/25 17:20:43 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/25 17:39:46 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/26 18:54:06 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
 #include <math.h>
+
+void	translate(t_point3f *pt, t_point3f delta)
+{
+	pt->x += delta.x;
+	pt->y += delta.y;
+	pt->z += delta.z;
+}
+
+void	scale(t_point3f *pt, double k)
+{
+	pt->x *= k;
+	pt->y *= k;
+	pt->z *= k;
+}
 
 void	rotate_yaw(t_point3f *pt, double yaw)
 {
