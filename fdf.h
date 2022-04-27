@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/26 22:21:38 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/27 21:13:47 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,7 +308,7 @@ t_fdf_point	*get_pos(t_fdf_map *map, long x, long y);
 
 void		fill_image(t_fdf *unit, unsigned char byte);
 void		put_pixel(t_fdf *unit, long x, long y, int color);
-void		draw_line(t_fdf *unit, t_point2 a, t_point2 b, t_color color);
+void		draw_line(t_fdf *unit, t_point3 a, t_point3 b, t_color color);
 void		refresh_window(t_fdf *unit);
 
 void		clear_depth(t_fdf *unit);

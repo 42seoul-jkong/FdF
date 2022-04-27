@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/25 16:05:39 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/26 20:43:38 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/27 22:09:00 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,83 @@ static long	_abs_diff(long a, long b)
 		return (a - b);
 }
 
-void	draw_line(t_fdf *unit, t_point2 a, t_point2 b, t_color color)
+static double	_rate(const t_point3 *c, const t_point3 *a, const t_point3 *b)
+{
+	long	val_c;
+	long	val_a;
+	long	val_b;
+
+	if (_abs_diff(a->x, b->x) > _abs_diff(a->y, b->y))
+	{
+		val_c = c->x;
+		val_a = a->x;
+		val_b = b->x;
+	}
+	else
+	{
+		val_c = c->y;
+		val_a = a->y;
+		val_b = b->y;
+	}
+	if (val_a != val_b)
+		return ((double)(val_c - val_a) / (double)(val_b - val_a));
+	else
+		return (1.0);
+}
+
+static void	_put_z(t_point3 *c, t_point3 *a, t_point3 *b)
+{
+	long	val_c;
+	long	val_a;
+	long	val_b;
+	double	m;
+
+	if (_abs_diff(a->x, b->x) > _abs_diff(a->y, b->y))
+	{
+		val_c = c->x;
+		val_a = a->x;
+		val_b = b->x;
+	}
+	else
+	{
+		val_c = c->y;
+		val_a = a->y;
+		val_b = b->y;
+	}
+	if (val_a != val_b)
+	{
+		m = (double)(b->z - a->z) / (double)(val_b - val_a);
+		c->z = m * (double)(val_c - val_a) + a->z;
+	}
+	else
+		c->z = a->z;
+}
+
+void	draw_line(t_fdf *unit, t_point3 a, t_point3 b, t_color color)
 {
 	const t_point2	dst = {_abs_diff(a.x, b.x), _abs_diff(a.y, b.y)};
 	const t_point2	sgn = {((a.x < b.x) << 1) - 1, ((a.y < b.y) << 1) - 1};
 	long			err;
 	t_point2		t;
+	t_point3		c;
 
 	err = dst.x - dst.y;
-	put_pixel(unit, a.x, a.y, color.begin);
-	while (a.x != b.x || a.y != b.y)
+	c = a;
+	put_pixel_depth(unit, c, get_color(&color, _rate(&c, &a, &b)));
+	while (c.x != b.x || c.y != b.y)
 	{
-		t.x = (2 * err - dst.x) < 0;
-		t.y = (2 * err + dst.y) > 0;
+		t = (t_point2){(2 * err - dst.x) < 0, (2 * err + dst.y) > 0};
 		if (t.y)
 		{
 			err -= dst.y;
-			a.x += sgn.x;
+			c.x += sgn.x;
 		}
 		if (t.x)
 		{
 			err += dst.x;
-			a.y += sgn.y;
+			c.y += sgn.y;
 		}
-		put_pixel(unit, a.x, a.y, color.end);
+		_put_z(&c, &a, &b);
+		put_pixel_depth(unit, c, get_color(&color, _rate(&c, &a, &b)));
 	}
 }

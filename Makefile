@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 .SUFFIXES: .c .o .h
-.PHONY: all clean fclean re bonus dclean
+.PHONY: all clean fclean re bonus dclean release
 
 CC = cc
 RM = rm -f
@@ -80,6 +80,11 @@ $(TARGET): $(OBJS) | $(MLX_NAME)
 dclean:
 	$(RM) $(MLX_NAME)
 	$(MAKE) -C $(MLX_DIR) clean
+
+release: C_SANITIZER_FLAGS=
+release: C_DEBUG_FLAGS=
+release: CFLAGS+=-O3
+release: re
 
 $(MLX_NAME):
 	$(MAKE) -C $(MLX_DIR) all $(MLX_HOOK)

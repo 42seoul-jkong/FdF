@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/26 21:46:43 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/27 21:43:33 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void	_draw_fdf(t_fdf *unit)
 			pos->coord = integer_3f(pt);
 		}
 	}
-	ft_memset(unit->depth, 0, unit->win_dim.x * unit->win_dim.y * sizeof(*unit->depth));
+	clear_depth(unit);
 	for (long i = 0; i < unit->map.dim.x; i++)
 	{
 		for (long j = 0; j < unit->map.dim.y; j++)
@@ -61,9 +61,9 @@ static void	_draw_fdf(t_fdf *unit)
 			else
 				pos_py = NULL;
 			if (pos_px)
-				draw_line(unit, drop_z_3(pos_px->coord), drop_z_3(pos->coord), (t_color){pos_px->color, pos->color});
+				draw_line(unit, pos_px->coord, pos->coord, (t_color){pos_px->color, pos->color});
 			if (pos_py)
-				draw_line(unit, drop_z_3(pos_py->coord), drop_z_3(pos->coord), (t_color){pos_py->color, pos->color});
+				draw_line(unit, pos_py->coord, pos->coord, (t_color){pos_py->color, pos->color});
 			put_pixel(unit, pos->coord.x, pos->coord.y, pos->color);
 		}
 	}
@@ -98,7 +98,7 @@ static void	_on_key(t_fdf *unit, int flag, int keycode)
 			color |= 0x009900;
 		if (has_flag(unit->input.pressed, MLX_MOD_MOUSE_RIGHT))
 			color |= 0x000099;
-		draw_line(unit, unit->input.pointed, unit->input.latest, (t_color){color, color / 3});
+		//old: draw_line(unit, unit->input.pointed, unit->input.latest, (t_color){color, color / 3});
 		refresh_window(unit);
 	}
 	if (keycode == kVK_ANSI_Q)
@@ -259,6 +259,7 @@ static int	_create_window(void *mlx_ptr, t_fdf *unit)
 	if (!unit->img_ptr)
 		return (0);
 	unit->depth = calloc_safe(width * height, sizeof(*unit->depth));
+	clear_depth(unit);
 	fill_image(unit, 0xCC);
 	refresh_window(unit);
 	mlx_hook(unit->win_ptr, MLX_EVENT_KEY_DOWN, 0, &_key_down_hook, unit);
