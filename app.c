@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/27 21:43:33 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/30 17:47:03 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,95 @@ static void	_draw_fdf(t_fdf *unit)
 	{
 		for (long j = 0; j < unit->map.dim.y; j++)
 		{
+			if (0)
+			{
+				//conic_hook third attempt
+				t_fdf_point *const	pos = get_pos(&unit->map, i, j);
+				t_point3f			pt;
+				double				stdp1 = M_PI * 20 / 180.0;
+				double				stdp2 = M_PI * 60 / 180.0;
+				double				ref_lat = M_PI * 0 / 180.0;
+				double				ref_long = M_PI * 90 / 180.0;
+				t_point3f			conic;
+
+				pt = (t_point3f){i, j, unit->z_size * pos->value};
+				rotate_pitch(&pt, unit->rotate.x);
+				rotate_roll(&pt, unit->rotate.y);
+				double latitude = 2 * M_PI * pt.x / unit->map.dim.x;
+				double longitude = M_PI * pt.y / unit->map.dim.y;
+				double n;
+				if (stdp1 != stdp2)
+					n = (cos(stdp1) - cos(stdp2)) / (stdp2 - stdp1);
+				else
+					n = sin(stdp1);
+				double G = cos(stdp1) / n + stdp1;
+				double rho = G - latitude;
+				double rho0 = G - ref_lat;
+				conic.x = rho * sin(n * (longitude - ref_long));
+				conic.y = rho0 - rho * cos(n * (longitude - ref_long));
+				conic.z = pt.z;
+				scale(&conic, unit->scale);
+				translate(&conic, unit->translate);
+				rotate_yaw(&conic, unit->rotate.z);
+				pos->coord = integer_3f(conic);
+				continue;
+			}
+			if (0)
+			{
+				//conic_hook second attempt
+				t_fdf_point *const	pos = get_pos(&unit->map, i, j);
+				t_point3f			pt;
+				double				h = 3;
+				t_point3f			conic;
+
+				pt = (t_point3f){i, j, unit->z_size * pos->value};
+				rotate_pitch(&pt, unit->rotate.x);
+				rotate_roll(&pt, unit->rotate.y);
+				rotate_yaw(&pt, unit->rotate.z);
+				double l = 1.0 / sin(acos(1.0 / h) + pt.y) * cos(pt.y);
+				double x = (pt.x) / sqrt(pow(h, 2) - 1.0);
+				conic.x = l * sin(x);
+				conic.y = l * cos(x);
+				conic.z = pt.z;
+				scale(&conic, unit->scale);
+				translate(&conic, unit->translate);
+				pos->coord = integer_3f(conic);
+				continue;
+			}
+			if (1)
+			{
+				//conic_hook spherical test
+				t_fdf_point *const	pos = get_pos(&unit->map, i, j);
+				t_point3f			pt;
+				t_point3f			center;
+				t_point3f			spherical;
+
+				pt = (t_point3f){i, j, unit->z_size * pos->value};
+				center = zero_z_2(center_2(unit->map.dim));
+				translate(&pt, negative_3f(center));
+				rotate_pitch(&pt, unit->rotate.x);
+				rotate_roll(&pt, unit->rotate.y);
+				rotate_yaw(&pt, unit->rotate.z);
+				spherical.x = sqrt(pow(pt.x - center.x, 2) + pow(pt.y - center.y, 2) + pow(pt.z - center.z, 2));
+				if (pt.x)
+					spherical.y = atan(pt.y / pt.x);
+				else
+					spherical.y = 0;
+				if (spherical.x)
+					spherical.z = atan(pt.z / spherical.x);
+				else
+					spherical.z = 0;
+				scale(&spherical, unit->scale);
+				translate(&spherical, unit->translate);
+				pos->coord = integer_3f(spherical);
+				continue;
+			}
 			t_fdf_point *const	pos = get_pos(&unit->map, i, j);
 			t_point3f			pt;
 			t_point3f			center;
 
-			pt = (t_point3f){i, j, pos->value};
-			//center = zero_z_2(center_2(unit->map.dim));
-			center = (t_point3f){unit->map.dim.x / 2, unit->map.dim.y / 2, 0};
+			pt = (t_point3f){i, j, unit->z_size * pos->value};
+			center = zero_z_2(center_2(unit->map.dim));
 			scale(&pt, unit->scale);
 			scale(&center, unit->scale);
 			translate(&pt, negative_3f(center));
@@ -40,6 +122,7 @@ static void	_draw_fdf(t_fdf *unit)
 			rotate_yaw(&pt, unit->rotate.z);
 			translate(&pt, center);
 			translate(&pt, unit->translate);
+
 			pos->coord = integer_3f(pt);
 		}
 	}
@@ -129,6 +212,10 @@ static void	_on_key(t_fdf *unit, int flag, int keycode)
 		unit->scale *= 2;
 	else if (keycode == kVK_ANSI_Minus)
 		unit->scale *= 0.5;
+	else if (keycode == kVK_ANSI_Comma)
+		unit->z_size /= 1.1;
+	else if (keycode == kVK_ANSI_Period)
+		unit->z_size *= 1.1;
 	else if (!(has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_Z))
 		return ;
 	_draw_fdf(unit);
@@ -248,6 +335,7 @@ static int	_create_window(void *mlx_ptr, t_fdf *unit)
 	width = 800;
 	height = 600;
 	unit->scale = 1.0;
+	unit->z_size = 1.0;
 	title = unit->map.path;
 	unit->mlx_ptr = mlx_ptr;
 	unit->win_dim.x = width;

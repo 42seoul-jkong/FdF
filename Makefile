@@ -84,7 +84,7 @@ dclean:
 release: C_SANITIZER_FLAGS=
 release: C_DEBUG_FLAGS=
 release: CFLAGS+=-O3
-release: re
+release: all
 
 $(MLX_NAME):
 	$(MAKE) -C $(MLX_DIR) all $(MLX_HOOK)

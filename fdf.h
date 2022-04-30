@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/27 21:13:47 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/28 18:19:31 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ typedef struct s_fdf
 	t_point3f	rotate;
 	double		scale;
 	t_point3f	translate;
+	double		z_size;
 }	t_fdf;
 
 /*

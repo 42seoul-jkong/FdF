@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 15:42:06 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/26 19:51:41 by jkong            ###   ########.fr       */
+/*   Updated: 2022/04/28 18:16:18 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,16 @@
 t_fdf_point	*get_pos(t_fdf_map *map, long x, long y)
 {
 	return (&map->arr[x + y * map->dim.x]);
+}
+
+static int _default_color(int value)
+{
+	if (value < 5)
+		return (0xFFFFFF);
+	else if (value < 10)
+		return (0x888800);
+	else
+		return (0xFF00FF);
 }
 
 static int	_load_line(t_fdf_map *map, long y, char **line)
@@ -36,7 +46,7 @@ static int	_load_line(t_fdf_map *map, long y, char **line)
 			if (info[1])
 				point->color = ft_strtoi(info[1]);
 			else
-				point->color = 0xFFFFFF;
+				point->color = _default_color(point->value);
 		}
 		ft_split_free(info);
 		x++;
