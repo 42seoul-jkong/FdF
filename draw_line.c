@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/25 16:05:39 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/27 22:09:00 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/02 19:41:40 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static double	_rate(const t_point3 *c, const t_point3 *a, const t_point3 *b)
 		return (1.0);
 }
 
-static void	_put_z(t_point3 *c, t_point3 *a, t_point3 *b)
+static void	_put_z(t_point3 *c, const t_point3 *a, const t_point3 *b)
 {
 	long	val_c;
 	long	val_a;

@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 15:42:06 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/26 21:17:57 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/02 15:24:56 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,8 +103,11 @@ int	fdf_read_map(t_fdf_map *map, char *path)
 	{
 		map->dim.x = ft_split_count(loader->head->str, " \n");
 		map->dim.y = loader->count;
-		map->arr = calloc_safe(map->dim.x * map->dim.y, sizeof(*map->arr));
-		result = fdf_load_map(map, loader);
+		if (map->dim.x * map->dim.y > 0)
+		{
+			map->arr = calloc_safe(map->dim.x * map->dim.y, sizeof(*map->arr));
+			result = fdf_load_map(map, loader);
+		}
 	}
 	_free_loader(loader);
 	return (result);

@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/28 18:19:31 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/02 22:30:22 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,14 @@ typedef struct s_point3f
 	double	y;
 	double	z;
 }	t_point3f;
+
+typedef struct s_rect
+{
+	long	left;
+	long	right;
+	long	top;
+	long	bottom;
+}	t_rect;
 
 typedef unsigned int	t_pixel;
 
@@ -82,7 +90,6 @@ typedef struct s_input_sys
 {
 	int			pressed;
 	t_point2	latest;
-	t_point2	pointed;
 }	t_input_sys;
 
 typedef struct s_fdf
@@ -94,6 +101,7 @@ typedef struct s_fdf
 	void		*img_ptr;
 	long		*depth;
 	t_input_sys	input;
+	t_point3f	default_rotate;
 	t_point3f	rotate;
 	double		scale;
 	t_point3f	translate;
@@ -306,6 +314,8 @@ enum e_modifiers
 int			fdf_read_map(t_fdf_map *map, char *path);
 int			fdf_load_map(t_fdf_map *map, t_map_loader *loader);
 t_fdf_point	*get_pos(t_fdf_map *map, long x, long y);
+void		set_hook(t_fdf *unit);
+void		draw_fdf(t_fdf *unit);
 
 void		fill_image(t_fdf *unit, unsigned char byte);
 void		put_pixel(t_fdf *unit, long x, long y, int color);
@@ -319,7 +329,6 @@ int			get_color(t_color *range, double rate);
 
 t_point2	center_2(t_point2 pt);
 t_point3f	zero_z_2(t_point2 pt);
-t_point2	drop_z_3(t_point3 pt);
 t_point3	integer_3f(t_point3f pt);
 t_point3f	negative_3f(t_point3f pt);
 
@@ -347,5 +356,9 @@ int			has_flag(int flags, int index);
 
 void		*malloc_safe(size_t size);
 void		*calloc_safe(size_t count, size_t size);
+
+void		write_safe(int fd, const void *buf, size_t len);
+void		putstr_safe(const char *str);
+void		puterr_safe(const char *str);
 
 #endif

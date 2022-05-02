@@ -20,11 +20,13 @@ OBJECTS_DIR = objs/
 
 SRCS_BASE = app.c \
 			fdf_map.c fdf_map_read.c \
+			fdf_draw.c \
+			fdf_input.c fdf_input_key.c fdf_input_mouse.c fdf_input_move.c \
 			draw.c draw_line.c depth.c \
 			coordinate.c transform.c color.c \
 			libft.c libft_split.c libft_strtoi.c \
 			util_flag.c \
-			safe_mem.c
+			safe_mem.c safe_write.c
 OBJS_BASE = $(addprefix $(OBJECTS_DIR), $(SRCS_BASE:.c=.o))
 HEADER_BASE = fdf.h
 
