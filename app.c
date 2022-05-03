@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/03 21:59:49 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/03 22:30:22 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include "mlx.h"
 
 #include <math.h>
-#include <stdio.h>
 
 static void	_initialize_unit(t_fdf *unit)
 {
@@ -75,7 +74,7 @@ static int	_fdf(void *mlx_ptr, t_fdf *unit, char *path)
 			return (1);
 	}
 	else
-		perror("Map Error");
+		puterr_safe("Map Error\n");
 	return (0);
 }
 
@@ -113,7 +112,7 @@ int	main(int argc, char *argv[])
 
 	if (argc < 2)
 	{
-		puterr_safe("No Map Filename\n");
+		putstr_safe("No Map Filename\n");
 		return (EXIT_FAILURE);
 	}
 	mlx_ptr = mlx_init();
