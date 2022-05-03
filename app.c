@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/04 01:25:40 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/04 02:19:57 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,7 @@ static void	_fdf_multiple(void *mlx_ptr, int argc, int begin, char *argv[])
 	}
 	if (loop)
 		mlx_loop(mlx_ptr);
-	i = 0;
-	while (i < argc - begin)
+	while (--i >= 0)
 	{
 		if (fdf_arr[i].win_ptr)
 			mlx_destroy_window(fdf_arr[i].mlx_ptr, fdf_arr[i].win_ptr);
@@ -105,7 +104,6 @@ static void	_fdf_multiple(void *mlx_ptr, int argc, int begin, char *argv[])
 			mlx_destroy_image(fdf_arr[i].mlx_ptr, fdf_arr[i].img_ptr);
 		free(fdf_arr[i].map.arr);
 		free(fdf_arr[i].depth);
-		i++;
 	}
 	free(fdf_arr);
 }
@@ -123,5 +121,7 @@ int	main(int argc, char *argv[])
 	if (!mlx_ptr)
 		return (EXIT_FAILURE);
 	_fdf_multiple(mlx_ptr, argc, 1, argv);
+	mlx_destroy_display(mlx_ptr);
+	free(mlx_ptr);
 	return (EXIT_SUCCESS);
 }

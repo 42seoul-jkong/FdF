@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 18:42:40 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/02 20:19:40 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/04 02:17:04 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,5 +57,7 @@ static int	_mouse_move_hook(int x, int y, void *param)
 
 void	enable_mouse_move_hook(t_fdf *unit)
 {
-	mlx_hook(unit->win_ptr, MLX_EVENT_MOUSE_MOVE, 0, &_mouse_move_hook, unit);
+	mlx_hook(unit->win_ptr,
+		MotionNotify, PointerMotionMask,
+		&_mouse_move_hook, unit);
 }

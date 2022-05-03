@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 18:32:52 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/03 20:28:58 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/04 02:16:51 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ static int	_key_up_hook(int keycode, void *param)
 
 void	enable_key_hook(t_fdf *unit)
 {
-	mlx_hook(unit->win_ptr, MLX_EVENT_KEY_DOWN, 0, &_key_down_hook, unit);
+	mlx_hook(unit->win_ptr,
+		KeyPress, KeyPressMask,
+		&_key_down_hook, unit);
 	mlx_key_hook(unit->win_ptr, &_key_up_hook, unit);
 }

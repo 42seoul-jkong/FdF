@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 18:33:38 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/03 20:14:56 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/04 02:16:30 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,5 +72,7 @@ static int	_mouse_up_hook(int button, int x, int y, void *param)
 void	enable_mouse_hook(t_fdf *unit)
 {
 	mlx_mouse_hook(unit->win_ptr, &_mouse_down_hook, unit);
-	mlx_hook(unit->win_ptr, MLX_EVENT_MOUSE_UP, 0, &_mouse_up_hook, unit);
+	mlx_hook(unit->win_ptr,
+		ButtonRelease, ButtonReleaseMask,
+		&_mouse_up_hook, unit);
 }

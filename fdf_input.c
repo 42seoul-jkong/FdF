@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 18:43:15 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/02 19:02:32 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/04 02:17:10 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,7 @@ void	set_hook(t_fdf *unit)
 	enable_mouse_hook(unit);
 	enable_mouse_move_hook(unit);
 	mlx_expose_hook(unit->win_ptr, &_expose_hook, unit);
-	mlx_hook(unit->win_ptr, MLX_EVENT_CLOSE, 0, &_close_hook, unit);
+	mlx_hook(unit->win_ptr,
+		DestroyNotify, 0,
+		&_close_hook, unit);
 }

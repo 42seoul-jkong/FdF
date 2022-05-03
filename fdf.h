@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/03 22:00:16 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/04 02:11:59 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,18 +262,80 @@ enum e_vk_i
 };
 
 /*
- * Reference: mlx_window.swift#eventFuncts
+ * Reference: https://gitlab.freedesktop.org/xorg/proto/xorgproto
+ * /-/blob/master/include/X11/X.h
  */
-enum e_mlx_event_index
+enum e_mlx_input_event_mask
 {
-	MLX_EVENT_KEY_DOWN = 2,
-	MLX_EVENT_KEY_UP = 3,
-	MLX_EVENT_MOUSE_DOWN = 4,
-	MLX_EVENT_MOUSE_UP = 5,
-	MLX_EVENT_MOUSE_MOVE = 6,
-	MLX_EVENT_EXPOSURE = 12,
-	MLX_EVENT_CLOSE = 17,
-	MLX_EVENT_ACCEPT_MOUSE_MOVE = 32
+	NoEventMask = 0,
+	KeyPressMask = 1 << 0,
+	KeyReleaseMask = 1 << 1,
+	ButtonPressMask = 1 << 2,
+	ButtonReleaseMask = 1 << 3,
+	EnterWindowMask = 1 << 4,
+	LeaveWindowMask = 1 << 5,
+	PointerMotionMask = 1 << 6,
+	PointerMotionHintMask = 1 << 7,
+	Button1MotionMask = 1 << 8,
+	Button2MotionMask = 1 << 9,
+	Button3MotionMask = 1 << 10,
+	Button4MotionMask = 1 << 11,
+	Button5MotionMask = 1 << 12,
+	ButtonMotionMask = 1 << 13,
+	KeymapStateMask = 1 << 14,
+	ExposureMask = 1 << 15,
+	VisibilityChangeMask = 1 << 16,
+	StructureNotifyMask = 1 << 17,
+	ResizeRedirectMask = 1 << 18,
+	SubstructureNotifyMask = 1 << 19,
+	SubstructureRedirectMask = 1 << 20,
+	FocusChangeMask = 1 << 21,
+	PropertyChangeMask = 1 << 22,
+	ColormapChangeMask = 1 << 23,
+	OwnerGrabButtonMask = 1 << 24
+};
+
+/*
+ * Reference: https://gitlab.freedesktop.org/xorg/proto/xorgproto
+ * /-/blob/master/include/X11/X.h
+ */
+enum e_mlx_event_type
+{
+	KeyPress = 2,
+	KeyRelease = 3,
+	ButtonPress = 4,
+	ButtonRelease = 5,
+	MotionNotify = 6,
+	EnterNotify = 7,
+	LeaveNotify = 8,
+	FocusIn = 9,
+	FocusOut = 10,
+	KeymapNotify = 11,
+	Expose = 12,
+	GraphicsExpose = 13,
+	NoExpose = 14,
+	VisibilityNotify = 15,
+	CreateNotify = 16,
+	DestroyNotify = 17,
+	UnmapNotify = 18,
+	MapNotify = 19,
+	MapRequest = 20,
+	ReparentNotify = 21,
+	ConfigureNotify = 22,
+	ConfigureRequest = 23,
+	GravityNotify = 24,
+	ResizeRequest = 25,
+	CirculateNotify = 26,
+	CirculateRequest = 27,
+	PropertyNotify = 28,
+	SelectionClear = 29,
+	SelectionRequest = 30,
+	SelectionNotify = 31,
+	ColormapNotify = 32,
+	ClientMessage = 33,
+	MappingNotify = 34,
+	GenericEvent = 35,
+	LASTEvent = 36
 };
 
 /*
