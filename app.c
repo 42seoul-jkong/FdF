@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/03 21:34:58 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/03 21:59:49 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,14 @@ static void	_initialize_unit(t_fdf *unit)
 		i++;
 	}
 	br = bound_fdf(&unit->map);
-	unit->win_dim = (t_point2){br.right - br.left, br.bottom - br.top};
+	unit->win_dim.x = br.right - br.left + WIN_WIDTH_MARGIN;
+	unit->win_dim.y = br.bottom - br.top + WIN_HEIGHT_MARGIN;
 	if (unit->win_dim.x > MAX_WIN_WIDTH)
 		unit->win_dim.x = MAX_WIN_WIDTH;
 	if (unit->win_dim.y > MAX_WIN_HEIGHT)
 		unit->win_dim.y = MAX_WIN_HEIGHT;
-	unit->translate.x = -br.left;
-	unit->translate.y = -br.top;
+	unit->translate.x = -br.left + WIN_WIDTH_MARGIN / 2;
+	unit->translate.y = -br.top + WIN_HEIGHT_MARGIN / 2;
 }
 
 static int	_create_window(void *mlx_ptr, t_fdf *unit)

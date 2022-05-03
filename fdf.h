@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/03 21:28:57 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/03 22:00:16 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include <stdlib.h>
 
+# define WIN_WIDTH_MARGIN 200
+# define WIN_HEIGHT_MARGIN 200
 # define MAX_WIN_WIDTH 1920
 # define MAX_WIN_HEIGHT 1080
 
