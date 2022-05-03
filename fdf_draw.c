@@ -6,11 +6,29 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 16:20:57 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/02 22:25:27 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/03 19:23:10 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
+
+void	transform_fdf(t_fdf *unit, long x, long y)
+{
+	t_fdf_point *const	pos = get_pos(&unit->map, x, y);
+	t_point3f			pt;
+	t_point3f			center;
+
+	pt = (t_point3f){x, y, unit->z_size * pos->value};
+	center = zero_z_2(center_2(unit->map.dim));
+	translate(&pt, negative_3f(center));
+	rotate_pitch(&pt, unit->rotate.x);
+	rotate_roll(&pt, unit->rotate.y);
+	rotate_yaw(&pt, unit->rotate.z);
+	translate(&pt, center);
+	scale(&pt, unit->scale);
+	translate(&pt, unit->translate);
+	pos->coord = integer_3f(pt);
+}
 
 static void	_ensure_rect(t_rect *rect, t_fdf_point *pt, int force)
 {
@@ -39,24 +57,6 @@ static int	_in(t_fdf *unit, t_fdf_point *p, t_fdf_point *px, t_fdf_point *py)
 	if (win_rect.top <= rect.bottom && rect.top < win_rect.bottom)
 		return (1);
 	return (0);
-}
-
-static void	_transform_fdf(t_fdf *unit, long x, long y)
-{
-	t_fdf_point *const	pos = get_pos(&unit->map, x, y);
-	t_point3f			pt;
-	t_point3f			center;
-
-	pt = (t_point3f){x, y, unit->z_size * pos->value};
-	center = zero_z_2(center_2(unit->map.dim));
-	translate(&pt, negative_3f(center));
-	rotate_pitch(&pt, unit->rotate.x);
-	rotate_roll(&pt, unit->rotate.y);
-	rotate_yaw(&pt, unit->rotate.z);
-	translate(&pt, center);
-	scale(&pt, unit->scale);
-	translate(&pt, unit->translate);
-	pos->coord = integer_3f(pt);
 }
 
 static void	_pixel_fdf(t_fdf *unit, long x, long y)
@@ -96,7 +96,7 @@ void	draw_fdf(t_fdf *unit)
 	i = 0;
 	while (i < unit->map.dim.x * unit->map.dim.y)
 	{
-		_transform_fdf(unit, i % unit->map.dim.x, i / unit->map.dim.x);
+		transform_fdf(unit, i % unit->map.dim.x, i / unit->map.dim.x);
 		i++;
 	}
 	clear_depth(unit);

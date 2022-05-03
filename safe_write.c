@@ -6,12 +6,14 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 21:25:54 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/02 15:39:19 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/03 21:29:18 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <unistd.h>
+
+size_t	ft_strlen(const char *s);
 
 void	write_safe(int fd, const void *buf, size_t len)
 {
@@ -28,22 +30,12 @@ void	write_safe(int fd, const void *buf, size_t len)
 	}
 }
 
-static size_t	_alone_strlen(const char *str)
-{
-	size_t	i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
 void	putstr_safe(const char *str)
 {
-	write_safe(STDOUT_FILENO, str, _alone_strlen(str));
+	write_safe(STDOUT_FILENO, str, ft_strlen(str));
 }
 
 void	puterr_safe(const char *str)
 {
-	write_safe(STDERR_FILENO, str, _alone_strlen(str));
+	write_safe(STDERR_FILENO, str, ft_strlen(str));
 }

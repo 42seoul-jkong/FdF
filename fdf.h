@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/02 22:30:22 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/03 21:28:57 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 # define FDF_H
 
 # include <stdlib.h>
+
+# define MAX_WIN_WIDTH 1920
+# define MAX_WIN_HEIGHT 1080
 
 # ifndef VECTOR_SIZE
 #  define VECTOR_SIZE 1024
@@ -103,8 +106,11 @@ typedef struct s_fdf
 	t_input_sys	input;
 	t_point3f	default_rotate;
 	t_point3f	rotate;
+	double		default_scale;
 	double		scale;
+	t_point3f	default_translate;
 	t_point3f	translate;
+	double		default_z_size;
 	double		z_size;
 }	t_fdf;
 
@@ -314,16 +320,18 @@ enum e_modifiers
 int			fdf_read_map(t_fdf_map *map, char *path);
 int			fdf_load_map(t_fdf_map *map, t_map_loader *loader);
 t_fdf_point	*get_pos(t_fdf_map *map, long x, long y);
+t_rect		bound_fdf(t_fdf_map *map);
 void		set_hook(t_fdf *unit);
+void		transform_fdf(t_fdf *unit, long x, long y);
 void		draw_fdf(t_fdf *unit);
 
 void		fill_image(t_fdf *unit, unsigned char byte);
 void		put_pixel(t_fdf *unit, long x, long y, int color);
-void		draw_line(t_fdf *unit, t_point3 a, t_point3 b, t_color color);
 void		refresh_window(t_fdf *unit);
 
 void		clear_depth(t_fdf *unit);
 void		put_pixel_depth(t_fdf *unit, t_point3 pos, int color);
+void		draw_line(t_fdf *unit, t_point3 a, t_point3 b, t_color color);
 
 int			get_color(t_color *range, double rate);
 
@@ -341,7 +349,6 @@ void		rotate_roll(t_point3f *pt, double roll);
 size_t		ft_strlen(const char *s);
 void		*ft_memset(void *b, int c, size_t len);
 void		*ft_memcpy(void *dst, const void *src, size_t n);
-int			ft_strcmp(const char *s1, const char *s2);
 void		*ft_calloc(size_t count, size_t size);
 
 size_t		ft_split_count(const char *s, const char *set);

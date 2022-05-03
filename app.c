@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/02 22:25:54 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/03 21:34:58 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,31 +19,34 @@
 
 static void	_initialize_unit(t_fdf *unit)
 {
-	int		width;
-	int		height;
+	long	i;
+	t_rect	br;
 
-	width = 800;
-	height = 600;
-	unit->scale = 1.0;
+	unit->scale = 1024.0 / unit->map.dim.x;
 	unit->z_size = 1.0;
-	unit->default_rotate.x = M_PI_4;
-	unit->default_rotate.y = -asin(tan(M_PI_2 / 3.0));
-	unit->default_rotate.z = M_PI_2 / 3.0;
-	unit->rotate = unit->default_rotate;
-	unit->win_dim = (t_point2){width, height};
-	unit->depth = calloc_safe(width * height, sizeof(*unit->depth));
-	clear_depth(unit);
+	unit->rotate = (t_point3f){M_PI_4, -asin(tan(M_PI_2 / 3.0)), M_PI_2 / 3.0};
+	i = 0;
+	while (i < unit->map.dim.x * unit->map.dim.y)
+	{
+		transform_fdf(unit, i % unit->map.dim.x, i / unit->map.dim.x);
+		i++;
+	}
+	br = bound_fdf(&unit->map);
+	unit->win_dim = (t_point2){br.right - br.left, br.bottom - br.top};
+	if (unit->win_dim.x > MAX_WIN_WIDTH)
+		unit->win_dim.x = MAX_WIN_WIDTH;
+	if (unit->win_dim.y > MAX_WIN_HEIGHT)
+		unit->win_dim.y = MAX_WIN_HEIGHT;
+	unit->translate.x = -br.left;
+	unit->translate.y = -br.top;
 }
 
 static int	_create_window(void *mlx_ptr, t_fdf *unit)
 {
-	int		width;
-	int		height;
-	char	*title;
+	const int	width = unit->win_dim.x;
+	const int	height = unit->win_dim.y;
+	char *const	title = unit->map.path;
 
-	width = unit->win_dim.x;
-	height = unit->win_dim.y;
-	title = unit->map.path;
 	unit->mlx_ptr = mlx_ptr;
 	unit->win_ptr = mlx_new_window(unit->mlx_ptr, width, height, title);
 	if (!unit->win_ptr)
@@ -51,7 +54,13 @@ static int	_create_window(void *mlx_ptr, t_fdf *unit)
 	unit->img_ptr = mlx_new_image(unit->mlx_ptr, width, height);
 	if (!unit->img_ptr)
 		return (0);
+	unit->depth = calloc_safe(width * height, sizeof(*unit->depth));
+	clear_depth(unit);
 	draw_fdf(unit);
+	unit->default_scale = unit->scale;
+	unit->default_z_size = unit->z_size;
+	unit->default_rotate = unit->rotate;
+	unit->default_translate = unit->translate;
 	set_hook(unit);
 	return (1);
 }
@@ -87,6 +96,13 @@ static void	_fdf_multiple(void *mlx_ptr, int argc, char *argv[])
 	}
 	if (loop)
 		mlx_loop(mlx_ptr);
+	i = 0;
+	while (i < argc - begin)
+	{
+		free(fdf_arr[i].map.arr);
+		free(fdf_arr[i].depth);
+		i++;
+	}
 	free(fdf_arr);
 }
 

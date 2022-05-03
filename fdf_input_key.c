@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 18:32:52 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/02 22:27:28 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/03 20:28:58 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,10 @@ static void	_on_key(t_fdf *unit, int flag, int keycode)
 	}
 	if (has_flag(flag, MLX_MOD_LCMD) && keycode == kVK_ANSI_C)
 	{
-		unit->scale = 1.0;
-		ft_memset(&unit->translate, 0, sizeof(unit->translate));
+		unit->scale = unit->default_scale;
+		unit->z_size = unit->default_z_size;
+		unit->translate = unit->default_translate;
 		unit->rotate = unit->default_rotate;
-		unit->z_size = 1.0;
 		draw_fdf(unit);
 	}
 }

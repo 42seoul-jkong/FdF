@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 18:33:38 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/02 22:35:12 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/03 20:14:56 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,10 @@ static int	_get_mouse_flag(int button)
 
 static int	_on_mouse_vertical_wheel(t_fdf *unit, int up)
 {
-	unit->translate.x *= unit->scale;
-	unit->translate.y *= unit->scale;
 	if (up)
 		unit->scale *= 2.0;
 	else
 		unit->scale *= 0.5;
-	unit->translate.x /= unit->scale;
-	unit->translate.y /= unit->scale;
 	return (1);
 }
 

@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 15:42:06 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/02 17:10:42 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/03 19:44:28 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,4 +76,27 @@ int	fdf_load_map(t_fdf_map *map, t_map_loader *loader)
 		y++;
 	}
 	return (1);
+}
+
+t_rect	bound_fdf(t_fdf_map *map)
+{
+	t_rect		rect;
+	t_fdf_point	*pos;
+	long		i;
+
+	i = 0;
+	while (i < map->dim.x * map->dim.y)
+	{
+		pos = get_pos(map, i % map->dim.x, i / map->dim.x);
+		if (i == 0 || rect.left > pos->coord.x)
+			rect.left = pos->coord.x;
+		if (i == 0 || rect.right < pos->coord.x)
+			rect.right = pos->coord.x;
+		if (i == 0 || rect.top > pos->coord.y)
+			rect.top = pos->coord.y;
+		if (i == 0 || rect.bottom < pos->coord.y)
+			rect.bottom = pos->coord.y;
+		i++;
+	}
+	return (rect);
 }
