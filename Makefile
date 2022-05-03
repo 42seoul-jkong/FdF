@@ -39,14 +39,20 @@ SRCS = $(SRCS_BASE) $(SRCS_GNL)
 OBJS = $(OBJS_BASE) $(OBJS_GNL)
 
 MLX = mlx
-MLX_TYPE = dylib
-MLX_DIR = minilibx_mms_20210621
+ifeq ($(shell uname), Linux)
+	MLX_TYPE = a
+	MLX_DIR = minilibx-linux
+	MLX_DEP = -lXext -lX11
+else
+	MLX_TYPE = dylib
+	MLX_DIR = minilibx_mms_20210621
+	MLX_HOOK = OPTI=-Ounchecked
+endif
 MLX_NAME = lib$(MLX).$(MLX_TYPE)
-MLX_HOOK = OPTI=-Ounchecked
 
 LDFLAGS += -lm
 CFLAGS += -I$(MLX_DIR)
-LDFLAGS += -L$(MLX_DIR) -l$(MLX)
+LDFLAGS += -L$(MLX_DIR) -l$(MLX) $(MLX_DEP)
 
 C_SANITIZER_FLAGS = address undefined
 CFLAGS += $(addprefix -fsanitize=, $(C_SANITIZER_FLAGS))
@@ -74,10 +80,10 @@ $(OBJS_BASE): $(HEADER_BASE)
 $(OBJS_GNL): $(HEADER_GNL)
 
 $(addprefix $(OBJECTS_DIR), %.o): %.c
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c $< -o $@ $(CFLAGS)
 
 $(TARGET): $(OBJS) | $(MLX_NAME)
-	$(CC) -o $@ $(LDFLAGS) $^
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 dclean:
 	$(RM) $(MLX_NAME)

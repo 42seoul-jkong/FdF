@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/03 22:30:22 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/04 01:25:40 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,20 +72,20 @@ static int	_fdf(void *mlx_ptr, t_fdf *unit, char *path)
 		_initialize_unit(unit);
 		if (_create_window(mlx_ptr, unit))
 			return (1);
+		else
+			puterr_safe("MLX Error\n");
 	}
 	else
 		puterr_safe("Map Error\n");
 	return (0);
 }
 
-static void	_fdf_multiple(void *mlx_ptr, int argc, char *argv[])
+static void	_fdf_multiple(void *mlx_ptr, int argc, int begin, char *argv[])
 {
-	int		begin;
 	t_fdf	*fdf_arr;
 	int		i;
 	int		loop;
 
-	begin = 1;
 	fdf_arr = calloc_safe(argc - begin, sizeof(*fdf_arr));
 	i = 0;
 	loop = 0;
@@ -99,6 +99,10 @@ static void	_fdf_multiple(void *mlx_ptr, int argc, char *argv[])
 	i = 0;
 	while (i < argc - begin)
 	{
+		if (fdf_arr[i].win_ptr)
+			mlx_destroy_window(fdf_arr[i].mlx_ptr, fdf_arr[i].win_ptr);
+		if (fdf_arr[i].img_ptr)
+			mlx_destroy_image(fdf_arr[i].mlx_ptr, fdf_arr[i].img_ptr);
 		free(fdf_arr[i].map.arr);
 		free(fdf_arr[i].depth);
 		i++;
@@ -118,6 +122,6 @@ int	main(int argc, char *argv[])
 	mlx_ptr = mlx_init();
 	if (!mlx_ptr)
 		return (EXIT_FAILURE);
-	_fdf_multiple(mlx_ptr, argc, argv);
+	_fdf_multiple(mlx_ptr, argc, 1, argv);
 	return (EXIT_SUCCESS);
 }

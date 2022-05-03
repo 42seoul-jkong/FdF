@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/25 16:05:15 by jkong             #+#    #+#             */
-/*   Updated: 2022/04/26 21:56:18 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/04 01:26:40 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,9 @@ void	put_pixel(t_fdf *unit, long x, long y, int color)
 	int		endian;
 	t_pixel	pixel;
 
-	if (x < 0 || x >= unit->win_dim.x || y < 0 || y >= unit->win_dim.y)
+	if (x < 0 || x >= unit->win_dim.x)
+		return ;
+	if (y < 0 || y >= unit->win_dim.y)
 		return ;
 	ptr = mlx_get_data_addr(unit->img_ptr, &bpp, &size_of_line, &endian);
 	if (bpp != sizeof(t_pixel) * BIT_COUNT)
