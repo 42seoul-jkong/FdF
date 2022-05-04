@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/04 11:53:08 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/04 12:11:08 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ typedef struct s_fdf
  *    in this case, pressing 'A' will generate a different virtual
  *    keycode.
  */
-enum e_vk
+enum e_mac_virtual_keycode_ansi
 {
 	kVK_ANSI_A = 0x00,
 	kVK_ANSI_S = 0x01,
@@ -212,7 +212,7 @@ enum e_vk
 /*
  * keycodes for keys that are independent of keyboard layout
  */
-enum e_vk_i
+enum e_mac_virtual_keycode_alternative
 {
 	kVK_Return = 0x24,
 	kVK_Tab = 0x30,
@@ -367,7 +367,7 @@ enum e_mlx_mouse_button
  * Initially (MLX_MOD_UNKNOWN) is returned unconditionally.
  * So after (NO_MLX_MOD_KEY), using as different meaning.
  */
-enum e_modifiers
+enum e_mlx_modifiers
 {
 	MLX_MOD_LCONTROL,
 	MLX_MOD_LSHIFT,
