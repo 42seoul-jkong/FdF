@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:35:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/04 02:11:59 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/04 11:53:08 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include <stdlib.h>
 
+# define IMG_SCALE_RATIO 1024.0
+# define IMG_Z_SIZE_VALUE 1.0
 # define WIN_WIDTH_MARGIN 200
 # define WIN_HEIGHT_MARGIN 200
 # define MAX_WIN_WIDTH 1920

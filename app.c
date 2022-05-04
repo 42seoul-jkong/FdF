@@ -6,7 +6,7 @@
 /*   By: jkong <jkong@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 13:28:26 by jkong             #+#    #+#             */
-/*   Updated: 2022/05/04 02:19:57 by jkong            ###   ########.fr       */
+/*   Updated: 2022/05/04 11:53:11 by jkong            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ static void	_initialize_unit(t_fdf *unit)
 	long	i;
 	t_rect	br;
 
-	unit->scale = 1024.0 / unit->map.dim.x;
-	unit->z_size = 1.0;
+	unit->scale = IMG_SCALE_RATIO / unit->map.dim.x;
+	unit->z_size = IMG_Z_SIZE_VALUE;
 	unit->rotate = (t_point3f){M_PI_4, -asin(tan(M_PI_2 / 3.0)), M_PI_2 / 3.0};
 	i = 0;
 	while (i < unit->map.dim.x * unit->map.dim.y)
@@ -98,8 +98,6 @@ static void	_fdf_multiple(void *mlx_ptr, int argc, int begin, char *argv[])
 		mlx_loop(mlx_ptr);
 	while (--i >= 0)
 	{
-		if (fdf_arr[i].win_ptr)
-			mlx_destroy_window(fdf_arr[i].mlx_ptr, fdf_arr[i].win_ptr);
 		if (fdf_arr[i].img_ptr)
 			mlx_destroy_image(fdf_arr[i].mlx_ptr, fdf_arr[i].img_ptr);
 		free(fdf_arr[i].map.arr);
@@ -121,7 +119,5 @@ int	main(int argc, char *argv[])
 	if (!mlx_ptr)
 		return (EXIT_FAILURE);
 	_fdf_multiple(mlx_ptr, argc, 1, argv);
-	mlx_destroy_display(mlx_ptr);
-	free(mlx_ptr);
 	return (EXIT_SUCCESS);
 }
